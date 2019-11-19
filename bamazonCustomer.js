@@ -76,7 +76,7 @@ function promptUser(res) {
         var inArray = false;
         for (var i=0; i < idArray.length; i++) {
             if (idArray[i] == selection) {
-                console.log("found in array");
+                // console.log("found in array");
                 inArray = true;
             }
         }
@@ -95,23 +95,39 @@ function promptUser(res) {
   itemsArray = Object.values(res);
 
   inquirer.prompt(questions).then(answers => {
-    console.log(JSON.stringify(answers, null, "  "));
+    // console.log(JSON.stringify(answers, null, "  "));
     var order = 0;
     qty = answers.qty;
     selection = answers.selection;
+    // console.log(itemsArray[selection.item_id]);
 
-    for (let index = 0; index < itemsArray.length; index++) {
-      if (selection == itemsArray[index].item_id) {
-        console.log(itemsArray[index]);
-        order = itemsArray[index].stock_quantity - qty;
-        if (order => 0) {
-          updateProduct(order, selection);
+    for (let index = 0; index < res.length; index++) {
+      if (selection == res[index].item_id) {
+        console.log(res[index].stock_quantity);
+        if (res[index].stock_quantity > qty) {
+          console.log("Enough in stock to complete order")
+          console.log("Amt due: $" + res[index].price * qty);
+          updateProduct(res[index].stock_quantity - qty, selection);
         } else {
-          console.log("Not enough in stock to complete order....");
-          displayProducts(res);
+          console.log("Not enough product in stock");
+          readProducts();
         }
       }
-    }
+      
+  }
+
+    // for (let index = 0; index < itemsArray.length; index++) {
+    //   if (selection == itemsArray[index].item_id) {
+    //     console.log(itemsArray[index]);
+    //     order = itemsArray[index].stock_quantity - qty;
+    //     if (order => 0) {
+    //       updateProduct(order, selection);
+    //     } else {
+    //       console.log("Not enough in stock to complete order....");
+    //       displayProducts(res);
+    //     }
+    //   }
+    // }
 
     // TODO validation on id and qty being entered
   });
