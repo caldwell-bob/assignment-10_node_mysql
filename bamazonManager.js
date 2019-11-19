@@ -1,0 +1,201 @@
+var mysql = require("mysql");
+var inquirer = require("inquirer");
+
+var connection = mysql.createConnection({
+  host: "localhost",
+
+  // Your port; if not 3306
+  port: 3306,
+
+  // Your username
+  user: "root",
+
+  // Your password
+  password: "",
+  database: "bamazon"
+});
+
+connection.connect(function(err) {
+  if (err) throw err;
+  console.log("connected as id " + connection.threadId + "\n");
+});
+
+function addToInventory(res) {
+    //   console.log("in promptUser");
+    console.log("\n");
+   
+    var questions = [
+      {
+        type: "input",
+        name: "selection",
+        message: "Select id of product you wish to add to:",
+        validate: function validateSelection(selection) {
+            // * lets build out an array of item ids
+          
+          var idArray = [];
+          // console.log(typeof idArray);
+          for (let index = 0; index < res.length; index++) {
+              idArray.push(res[index].item_id);
+          }
+  
+          // ? Why does idArray end up an object here and not an array
+          // * set inArray to false as default
+          var inArray = false;
+          for (var i=0; i < idArray.length; i++) {
+              if (idArray[i] == selection) {
+                  // * console.log("found in array");
+                  inArray = true;
+              }
+          }
+          return inArray;
+        }
+      },
+      {
+        type: "input",
+        name: "qty",
+        message: "How many would you like to add:",
+        validate: function validateQty(qty) {
+          return qty !== "";
+        }
+      }
+    ];
+    // itemsArray = Object.values(res);
+  
+    inquirer.prompt(questions).then(answers => {
+      // console.log(JSON.stringify(answers, null, "  "));
+      var order = 0;
+      qty = answers.qty;
+      selection = answers.selection;
+      // console.log(itemsArray[selection.item_id]);
+  
+      for (let index = 0; index < res.length; index++) {
+        if (selection == res[index].item_id) {
+          // console.log(res[index].stock_quantity);
+          if (res[index].stock_quantity >= qty) {
+            // console.log("Enough in stock to complete order")
+            console.log("\nOrder Total: $" + res[index].price * qty);
+            console.log("New Stock Total: " + (res[index].stock_quantity - qty));
+            updateProduct(res[index].stock_quantity - qty, selection);
+          } else {
+            console.log("Not enough product in stock");
+            readProducts();
+          }
+        }
+        
+    }
+  
+      // for (let index = 0; index < itemsArray.length; index++) {
+      //   if (selection == itemsArray[index].item_id) {
+      //     console.log(itemsArray[index]);
+      //     order = itemsArray[index].stock_quantity - qty;
+      //     if (order => 0) {
+      //       updateProduct(order, selection);
+      //     } else {
+      //       console.log("Not enough in stock to complete order....");
+      //       displayProducts(res);
+      //     }
+      //   }
+      // }
+  
+      // TODO validation on id and qty being entered
+    });
+}
+
+
+function displayProducts(res) {
+    // console.log("In displayProducts\n");
+    //   console.log(res.length);
+    var item_id = "";
+    var product_name = "";
+    var department_name = "";
+    console.log("Welcome to Bamazon!\n");
+    console.log("  Id         Product                      Dept                Amt   Stock");
+    console.log("  --         -------                      ----                ---   -----\n");
+    for (var i = 0; i < res.length; i++) {
+      item_id = res[i].item_id.toString();
+      // item_id = item_id.toString();
+  
+      product_name = res[i].product_name;
+      price = res[i].price;
+      print = price.toString();
+      stock = res[i].stock_quantity;
+      stock = stock.toString();
+      dept = res[i].department_name;
+      // console.log(Object.getOwnPropertyNames(res[i]));
+      console.log(
+        item_id.padStart(4) +
+          " : " +
+          product_name.padEnd(35) +
+          dept.padEnd(20) +
+          price +
+          stock.padStart(4)
+      );
+    }
+    console.log("\n");
+    mainMenu();
+}
+  
+function readProducts() {
+    //   console.log("In readProducts\n");
+    connection.query("SELECT * FROM products", function(err, res) {
+      if (err) throw err;
+      // Log all results of the SELECT statement
+      //   console.log(res);
+      displayProducts(res);
+    });
+}
+
+function checkLowInventory() {
+    //   console.log("In readProducts\n");
+    connection.query("SELECT * FROM products where stock_quantity < 5;", function(err, res) {
+      if (err) throw err;
+      // Log all results of the SELECT statement
+      //   console.log(res);
+      displayProducts(res);
+    });
+}
+
+function mainMenu() {
+  //   console.log("in promptUser");
+  console.log("\n");
+
+
+  inquirer
+    .prompt({
+      type: "list",
+      name: "selection",
+      message: "Select option:",
+      choices: [
+        "View Products for Sale",
+        "View Low Inventory",
+        "Add to Inventory",
+        "Add New Product"
+      ]
+    })
+    .then(answers => {
+        switch (answers.selection) {
+            case 'View Products for Sale':
+              console.log('View Products for Sale');
+              readProducts();
+              break;
+            
+            case 'View Low Inventory':
+                console.log('View Low Inventory');
+                checkLowInventory();
+                break;
+            
+            case 'Add to Inventory':
+                console.log('Add to Inventory');
+                readProducts();
+                addToInventory();
+
+                break;
+            
+            case 'Add New Product':
+                console.log('Add New Product');
+                break;
+          }
+    });
+}
+
+mainMenu();
