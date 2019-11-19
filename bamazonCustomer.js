@@ -133,7 +133,8 @@ function displayProducts(res) {
   var product_name = "";
   var department_name = "";
   console.log("Welcome to Bamazon!\n");
-  console.log("  Id              Product                 Amt   Stock\n");
+  console.log("  Id         Product                      Dept                Amt   Stock");
+  console.log("  --         -------                      ----                ---   -----\n");
   for (var i = 0; i < res.length; i++) {
     item_id = res[i].item_id.toString();
     // item_id = item_id.toString();
@@ -149,7 +150,7 @@ function displayProducts(res) {
       item_id.padStart(4) +
         " : " +
         product_name.padEnd(35) +
-        department_name.padEnd(20) +
+        dept.padEnd(20) +
         price +
         stock.padStart(4)
     );
