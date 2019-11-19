@@ -21,8 +21,8 @@ connection.connect(function(err) {
 });
 
 function updateProduct(qty, selection) {
-  console.log("in updateProduct\n");
-  console.log(qty + " -- " + selection);
+  // console.log("in updateProduct\n");
+  // console.log(qty + " -- " + selection);
   var query = connection.query(
     "UPDATE products SET ? WHERE ?",
     [
@@ -35,26 +35,20 @@ function updateProduct(qty, selection) {
     ],
     function(err, res) {
       if (err) throw err;
-      console.log(res.affectedRows + " products updated!\n");
+      // console.log(res.affectedRows + " products updated!\n");
       // Call deleteProduct AFTER the UPDATE completes
       readProducts();
     }
   );
 
   // logs the actual query being run
-  console.log(query.sql);
+  // console.log(query.sql);
 }
 
 function promptUser(res) {
   //   console.log("in promptUser");
   console.log("\n");
-  //   var idArray = [];
-  //   for (let index = 0; index < res.length; index++) {
-  //       idArray.push(res[index].item_id);
-  //   }
-
-//   console.log(idArray);
-  //   console.log(res);
+ 
   var questions = [
     {
       type: "input",
@@ -69,14 +63,12 @@ function promptUser(res) {
             idArray.push(res[index].item_id);
         }
 
-        // console.log(typeof idArray);
-        // console.log(idArray);
         // ? Why does idArray end up an object here and not an array
         // * set inArray to false as default
         var inArray = false;
         for (var i=0; i < idArray.length; i++) {
             if (idArray[i] == selection) {
-                // console.log("found in array");
+                // * console.log("found in array");
                 inArray = true;
             }
         }
@@ -103,10 +95,11 @@ function promptUser(res) {
 
     for (let index = 0; index < res.length; index++) {
       if (selection == res[index].item_id) {
-        console.log(res[index].stock_quantity);
-        if (res[index].stock_quantity > qty) {
-          console.log("Enough in stock to complete order")
-          console.log("Amt due: $" + res[index].price * qty);
+        // console.log(res[index].stock_quantity);
+        if (res[index].stock_quantity >= qty) {
+          // console.log("Enough in stock to complete order")
+          console.log("\nOrder Total: $" + res[index].price * qty);
+          console.log("New Stock Total: " + (res[index].stock_quantity - qty));
           updateProduct(res[index].stock_quantity - qty, selection);
         } else {
           console.log("Not enough product in stock");
@@ -150,11 +143,13 @@ function displayProducts(res) {
     print = price.toString();
     stock = res[i].stock_quantity;
     stock = stock.toString();
+    dept = res[i].department_name;
     // console.log(Object.getOwnPropertyNames(res[i]));
     console.log(
       item_id.padStart(4) +
         " : " +
         product_name.padEnd(35) +
+        department_name.padEnd(20) +
         price +
         stock.padStart(4)
     );
