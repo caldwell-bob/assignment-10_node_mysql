@@ -1,6 +1,8 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
+var isAddToInventory = false;
+
 var connection = mysql.createConnection({
   host: "localhost",
 
@@ -17,38 +19,63 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId + "\n");
+//   console.log("connected as id " + connection.threadId + "\n");
 });
+
+function updateProduct(qty, selection) {
+    console.log("in updateProduct()");
+    var query = connection.query(
+      "UPDATE products SET ? WHERE ?",
+      [
+        {
+          stock_quantity: qty
+        },
+        {
+          item_id: selection
+        }
+      ],
+      function(err, res) {
+        if (err) throw err;
+        mainMenu();
+      }
+    );
+  
+    // logs the actual query being run
+    // console.log(query.sql);
+  }
 
 function addToInventory(res) {
     //   console.log("in promptUser");
     console.log("\n");
+    // isAddToInventory = true;
+
+    // readProducts();
    
     var questions = [
       {
         type: "input",
         name: "selection",
         message: "Select id of product you wish to add to:",
-        validate: function validateSelection(selection) {
-            // * lets build out an array of item ids
-          
-          var idArray = [];
-          // console.log(typeof idArray);
-          for (let index = 0; index < res.length; index++) {
-              idArray.push(res[index].item_id);
-          }
+        // TODO add valdiation back to Select ID question
+        // validate: function validateSelection(selection) {
+           
+        //   var idArray = [];
+         
+        //   for (let index = 0; index < res.length; index++) {
+        //       idArray.push(res[index].item_id);
+        //   }
   
-          // ? Why does idArray end up an object here and not an array
-          // * set inArray to false as default
-          var inArray = false;
-          for (var i=0; i < idArray.length; i++) {
-              if (idArray[i] == selection) {
-                  // * console.log("found in array");
-                  inArray = true;
-              }
-          }
-          return inArray;
-        }
+        //   // ? Why does idArray end up an object here and not an array
+        //   // * set inArray to false as default
+        //   var inArray = false;
+        //   for (var i=0; i < idArray.length; i++) {
+        //       if (idArray[i] == selection) {
+        //           // * console.log("found in array");
+        //           inArray = true;
+        //       }
+        //   }
+        //   return inArray;
+        // }
       },
       {
         type: "input",
@@ -62,40 +89,21 @@ function addToInventory(res) {
     // itemsArray = Object.values(res);
   
     inquirer.prompt(questions).then(answers => {
-      // console.log(JSON.stringify(answers, null, "  "));
+    //   console.log(JSON.stringify(answers, null, "  "));
       var order = 0;
-      qty = answers.qty;
+      qty = parseInt(answers.qty);
+      console.log(typeof qty + " qty");
       selection = answers.selection;
-      // console.log(itemsArray[selection.item_id]);
+      
   
       for (let index = 0; index < res.length; index++) {
         if (selection == res[index].item_id) {
-          // console.log(res[index].stock_quantity);
-          if (res[index].stock_quantity >= qty) {
-            // console.log("Enough in stock to complete order")
-            console.log("\nOrder Total: $" + res[index].price * qty);
-            console.log("New Stock Total: " + (res[index].stock_quantity - qty));
-            updateProduct(res[index].stock_quantity - qty, selection);
-          } else {
-            console.log("Not enough product in stock");
-            readProducts();
-          }
+            console.log(res[index].stock_quantity + qty);
+          updateProduct(res[index].stock_quantity + qty, selection);
+          
         }
-        
-    }
+      }
   
-      // for (let index = 0; index < itemsArray.length; index++) {
-      //   if (selection == itemsArray[index].item_id) {
-      //     console.log(itemsArray[index]);
-      //     order = itemsArray[index].stock_quantity - qty;
-      //     if (order => 0) {
-      //       updateProduct(order, selection);
-      //     } else {
-      //       console.log("Not enough in stock to complete order....");
-      //       displayProducts(res);
-      //     }
-      //   }
-      // }
   
       // TODO validation on id and qty being entered
     });
@@ -108,6 +116,7 @@ function displayProducts(res) {
     var item_id = "";
     var product_name = "";
     var department_name = "";
+    console.log("\n");
     console.log("Welcome to Bamazon!\n");
     console.log("  Id         Product                      Dept                Amt   Stock");
     console.log("  --         -------                      ----                ---   -----\n");
@@ -132,7 +141,11 @@ function displayProducts(res) {
       );
     }
     console.log("\n");
-    mainMenu();
+    if (!isAddToInventory) {
+        mainMenu();
+    }
+    addToInventory(res);
+   
 }
   
 function readProducts() {
@@ -169,7 +182,8 @@ function mainMenu() {
         "View Products for Sale",
         "View Low Inventory",
         "Add to Inventory",
-        "Add New Product"
+        "Add New Product",
+
       ]
     })
     .then(answers => {
@@ -185,9 +199,13 @@ function mainMenu() {
                 break;
             
             case 'Add to Inventory':
-                console.log('Add to Inventory');
+                // console.log('Add to Inventory');
+                // readProducts();
+                // res='addToInventory';
+                // TODO resolve timing issue here
+                isAddToInventory = true;
                 readProducts();
-                addToInventory();
+                // addToInventory();
 
                 break;
             
