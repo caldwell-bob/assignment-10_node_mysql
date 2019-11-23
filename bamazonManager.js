@@ -22,6 +22,57 @@ connection.connect(function(err) {
 //   console.log("connected as id " + connection.threadId + "\n");
 });
 
+function addNewProduct() {
+
+  var questions = [
+    {
+      type: "input",
+      name: "newProduct",
+      message: "What is the name of the product you wish to add:",
+    },
+    {
+      type: "input",
+      name: "newProductDept",
+      message: "Which dept does the new product belong to:",
+    },
+    {
+      type: "input",
+      name: "newProductPrice",
+      message: "How much does the new product sell for:",
+    },
+    {
+      type: "input",
+      name: "newProductInv",
+      message: "How many of the new product do you have in stock:",
+    },
+
+  ];
+
+  inquirer.prompt(questions).then(answers => { 
+    var newProduct = answers.newProduct;
+    var newProductDept = answers.newProductDept;
+    var newProductPrice = answers.newProductPrice;
+    var newProductInv = answers.newProductInv;
+
+    console.log("You are adding " + newProduct);
+    console.log("You are adding " + newProductDept);
+    console.log("You are adding " + newProductPrice + " type: " + typeof newProductPrice);
+    console.log("You are adding " + newProductInv);
+
+    let sql = "INSERT INTO products (product_name, department_name, price, stock_quantity) values ('" + newProduct + "', '" + newProductDept + "', '" + newProductPrice + "', '" + newProductInv + "');";
+    console.log(sql);
+
+    connection.query(sql, function(err, res) {
+      if (err) throw err;
+     
+      readProducts();
+    })
+
+
+  })
+}
+
+
 function updateProduct(qty, selection) {
     console.log("in updateProduct()");
     var query = connection.query(
@@ -158,6 +209,8 @@ function readProducts() {
     });
 }
 
+
+
 function checkLowInventory() {
     //   console.log("In readProducts\n");
     connection.query("SELECT * FROM products where stock_quantity < 5;", function(err, res) {
@@ -199,10 +252,6 @@ function mainMenu() {
                 break;
             
             case 'Add to Inventory':
-                // console.log('Add to Inventory');
-                // readProducts();
-                // res='addToInventory';
-                // TODO resolve timing issue here
                 isAddToInventory = true;
                 readProducts();
                 // addToInventory();
@@ -210,10 +259,14 @@ function mainMenu() {
                 break;
             
             case 'Add New Product':
-                console.log('Add New Product');
+                addNewProduct();
+
+                // console.log('Add New Product');
                 break;
           }
     });
 }
 
 mainMenu();
+
+// TODO resolve display when making second main selection - after compaling an action
