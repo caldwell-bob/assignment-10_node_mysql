@@ -44,6 +44,7 @@ function updateProduct(qty, selection) {
   // logs the actual query being run
   // console.log(query.sql);
 }
+// TODO export updateProduct so it can be called from other files
 
 function promptUser(res) {
   //   console.log("in promptUser");
