@@ -72,7 +72,6 @@ function addNewProduct() {
   })
 }
 
-
 function updateProduct(qty, selection) {
     console.log("in updateProduct()");
     var query = connection.query(
@@ -160,7 +159,6 @@ function addToInventory(res) {
     });
 }
 
-
 function displayProducts(res) {
     // console.log("In displayProducts\n");
     //   console.log(res.length);
@@ -208,8 +206,6 @@ function readProducts() {
       displayProducts(res);
     });
 }
-
-
 
 function checkLowInventory() {
     //   console.log("In readProducts\n");

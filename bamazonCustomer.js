@@ -20,7 +20,7 @@ connection.connect(function(err) {
   console.log("connected as id " + connection.threadId + "\n");
 });
 
-function updateProduct(qty, selection) {
+function updateProductStock(qty, selection) {
   // console.log("in updateProduct\n");
   // console.log(qty + " -- " + selection);
   var query = connection.query(
@@ -44,7 +44,33 @@ function updateProduct(qty, selection) {
   // logs the actual query being run
   // console.log(query.sql);
 }
+
+function updateProductSales(order, product) {
+  // console.log("in updateProduct\n");
+  // console.log(qty + " -- " + selection);
+  var query = connection.query(
+    "UPDATE products SET ? WHERE ?",
+    [
+      {
+        product_sales: order
+      },
+      {
+        product_name: product
+      }
+    ],
+    function(err, res) {
+      if (err) throw err;
+      console.log(query);
+      readProducts();
+    }
+  );
+}
+
+
+
+
 // TODO export updateProduct so it can be called from other files
+// TODO make sure to disconnect from db somewhere in app
 
 function promptUser(res) {
   //   console.log("in promptUser");
@@ -90,6 +116,7 @@ function promptUser(res) {
   inquirer.prompt(questions).then(answers => {
     // console.log(JSON.stringify(answers, null, "  "));
     var order = 0;
+    var dept = "";
     qty = answers.qty;
     selection = answers.selection;
     // console.log(itemsArray[selection.item_id]);
@@ -99,15 +126,17 @@ function promptUser(res) {
         // console.log(res[index].stock_quantity);
         if (res[index].stock_quantity >= qty) {
           // console.log("Enough in stock to complete order")
-          console.log("\nOrder Total: $" + res[index].price * qty);
+          order = res[index].price * qty;
+          product = res[index].product_name;
+          console.log("\nOrder Total: $" + order);
           console.log("New Stock Total: " + (res[index].stock_quantity - qty));
-          updateProduct(res[index].stock_quantity - qty, selection);
+          updateProductStock(res[index].stock_quantity - qty, selection);
+          updateProductSales(order, product);
         } else {
           console.log("Not enough product in stock");
           readProducts();
         }
-      }
-      
+      }      
   }
 
     // for (let index = 0; index < itemsArray.length; index++) {
@@ -149,7 +178,7 @@ function displayProducts(res) {
     // console.log(Object.getOwnPropertyNames(res[i]));
     console.log(
       item_id.padStart(4) +
-        " : " +
+        "    " +
         product_name.padEnd(35) +
         dept.padEnd(20) +
         price +
@@ -164,7 +193,7 @@ function readProducts() {
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
     // Log all results of the SELECT statement
-    //   console.log(res);
+      console.log(res);
     displayProducts(res);
   });
 }

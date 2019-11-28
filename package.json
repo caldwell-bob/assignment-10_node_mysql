@@ -1,0 +1,25 @@
+{
+  "name": "assignment-10_node_mysql",
+  "version": "1.0.0",
+  "description": "Storefront Node App w mySql -All 3 Challenges",
+  "main": "bamazonCustomer.js",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^7.0.0",
+    "mysql": "^2.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caldwell-bob/assignment-10_node_mysql.git"
+  },
+  "author": "Bob Caldwell",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/caldwell-bob/assignment-10_node_mysql/issues"
+  },
+  "homepage": "https://github.com/caldwell-bob/assignment-10_node_mysql#readme"
+}
