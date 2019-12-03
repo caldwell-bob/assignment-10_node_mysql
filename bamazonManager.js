@@ -270,4 +270,6 @@ function mainMenu() {
 
 mainMenu();
 
-// TODO resolve display when making second main selection - after compaling an action
+
+
+

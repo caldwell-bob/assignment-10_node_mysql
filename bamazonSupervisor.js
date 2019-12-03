@@ -76,6 +76,7 @@ function viewSalesByDept() {
 }
 
 function addDeptartment() {
+    // TODO need to finish this part....easy
     //   console.log("in promptUser");
     console.log("\n");
     // isAddToInventory = true;
@@ -141,7 +142,7 @@ function mainMenu() {
 
         case "Create New Departmen":
           addDeptartment();
-          console.log("Create New Departmen");
+        //   console.log("Create New Departmen");
 
           break;
       }
