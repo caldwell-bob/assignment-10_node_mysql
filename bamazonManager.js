@@ -73,12 +73,15 @@ function addNewProduct() {
 }
 
 function updateProduct(qty, selection) {
-    console.log("in updateProduct()");
+    // console.log("in updateProduct()");
     var query = connection.query(
-      "UPDATE products SET ? WHERE ?",
+      "UPDATE products SET ?, ? WHERE ?",
       [
         {
           stock_quantity: qty
+        },
+        {
+          product_sales: 0
         },
         {
           item_id: selection
@@ -142,13 +145,13 @@ function addToInventory(res) {
     //   console.log(JSON.stringify(answers, null, "  "));
       var order = 0;
       qty = parseInt(answers.qty);
-      console.log(typeof qty + " qty");
+      // console.log(typeof qty + " qty");
       selection = answers.selection;
       
   
       for (let index = 0; index < res.length; index++) {
         if (selection == res[index].item_id) {
-            console.log(res[index].stock_quantity + qty);
+            // console.log(res[index].stock_quantity + qty);
           updateProduct(res[index].stock_quantity + qty, selection);
           
         }
@@ -192,8 +195,10 @@ function displayProducts(res) {
     console.log("\n");
     if (!isAddToInventory) {
         mainMenu();
+    } else {
+      addToInventory(res);
     }
-    addToInventory(res);
+    
    
 }
   
@@ -238,12 +243,12 @@ function mainMenu() {
     .then(answers => {
         switch (answers.selection) {
             case 'View Products for Sale':
-              console.log('View Products for Sale');
+              // console.log('View Products for Sale');
               readProducts();
               break;
             
             case 'View Low Inventory':
-                console.log('View Low Inventory');
+                // console.log('View Low Inventory');
                 checkLowInventory();
                 break;
             

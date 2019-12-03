@@ -17,19 +17,33 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId + "\n");
+//   console.log("connected as id " + connection.threadId + "\n");
 });
 
 function viewSalesByDept() {
-  console.log("View Product Sales by Department\n");
+//   console.log("View Product Sales by Department\n");
+//   console.clear();
 
-  sql =
-    "SELECT d.department_id, d.department_name, d.over_head_costs, sum(p.product_sales) AS product_sales" +
-    ", (product_sales - d.over_head_costs) AS total_profit" +
-    " FROM departments AS d" +
-    " LEFT JOIN products AS p" +
-    " ON d.department_name = p.department_name" +
-    " GROUP BY d.department_id, p.department_name, d.over_head_costs, total_profit;";
+//   sqlOld =
+//     "SELECT d.department_id, d.department_name, d.over_head_costs, sum(p.product_sales) AS product_sales" +
+//     ", (product_sales - d.over_head_costs) AS total_profit" +
+//     " FROM departments AS d" +
+//     " LEFT JOIN products AS p" +
+//     " ON d.department_name = p.department_name" +
+//     " GROUP BY d.department_id, p.department_name, d.over_head_costs, total_profit;";
+
+  sql = 
+    "SELECT a.*," +
+    "    (a.product_sales - a.over_head_costs) AS total_profit " + 
+    "FROM " +   
+    "  (SELECT d.department_id," +
+	"		   d.department_name," +
+    "          d.over_head_costs," +
+    "          sum(p.product_sales) AS product_sales" +
+    "   FROM departments AS d " +
+    "   INNER JOIN products AS p " +
+    "   ON d.department_name = p.department_name" +
+    "   GROUP BY d.department_id, p.department_name, d.over_head_costs) AS a;"
  
   connection.query(sql, function(err, res) {
     if (err) throw err;
@@ -54,6 +68,58 @@ function viewSalesByDept() {
       );
     }
   });
+  console.log("\n");
+  console.log("\n");
+  console.log("\n");
+  console.log("\n");
+//   mainMenu();
+}
+
+function addDeptartment() {
+    //   console.log("in promptUser");
+    console.log("\n");
+    // isAddToInventory = true;
+
+    // readProducts();
+   
+    var questions = [
+      {
+        type: "input",
+        name: "newDept",
+        message: "What is the name of the new department:",
+        // TODO add valdiation back to Select ID question
+       
+      },
+      {
+        type: "input",
+        name: "overHead",
+        message: "What is the over head costs:",
+        validate: function validateQty(qty) {
+          return qty !== "";
+        }
+      }
+    ];
+    // itemsArray = Object.values(res);
+  
+    inquirer.prompt(questions).then(answers => {
+      console.log(JSON.stringify(answers, null, "  "));
+    //   var order = 0;
+    //   qty = parseInt(answers.qty);
+    //   console.log(typeof qty + " qty");
+    //   selection = answers.selection;
+      
+  
+    //   for (let index = 0; index < res.length; index++) {
+    //     if (selection == res[index].item_id) {
+    //         console.log(res[index].stock_quantity + qty);
+    //       updateProduct(res[index].stock_quantity + qty, selection);
+          
+    //     }
+    //   }
+  
+  
+      // TODO validation on id and qty being entered
+    });
 }
 
 function mainMenu() {
@@ -74,6 +140,7 @@ function mainMenu() {
           break;
 
         case "Create New Departmen":
+          addDeptartment();
           console.log("Create New Departmen");
 
           break;

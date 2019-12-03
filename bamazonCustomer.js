@@ -17,7 +17,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId + "\n");
+  // console.log("connected as id " + connection.threadId + "\n");
 });
 
 function updateProductStock(qty, selection) {
@@ -37,7 +37,7 @@ function updateProductStock(qty, selection) {
       if (err) throw err;
       // console.log(res.affectedRows + " products updated!\n");
       // Call deleteProduct AFTER the UPDATE completes
-      readProducts();
+      // readProducts();
     }
   );
 
@@ -65,9 +65,6 @@ function updateProductSales(order, product) {
     }
   );
 }
-
-
-
 
 // TODO export updateProduct so it can be called from other files
 // TODO make sure to disconnect from db somewhere in app
@@ -105,7 +102,7 @@ function promptUser(res) {
     {
       type: "input",
       name: "qty",
-      message: "How many would you like ot buy:",
+      message: "How many would you like to buy:",
       validate: function validateQty(qty) {
         return qty !== "";
       }
@@ -133,7 +130,7 @@ function promptUser(res) {
           updateProductStock(res[index].stock_quantity - qty, selection);
           updateProductSales(order, product);
         } else {
-          console.log("Not enough product in stock");
+          console.log("\nNot enough product in stock!!!!!\n");
           readProducts();
         }
       }      
@@ -193,7 +190,7 @@ function readProducts() {
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
     // Log all results of the SELECT statement
-      console.log(res);
+      // console.log(res);
     displayProducts(res);
   });
 }
