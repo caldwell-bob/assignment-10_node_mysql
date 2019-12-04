@@ -14,6 +14,6 @@ This assignment contains 3 separate apps:
 
 Note:  Create new department function not completed
 
-Run: To run, simply type NODE <filename>
+Run: To run, simply type NODE and the filename
 
 View:  The repo contains 3 recordings, one for each program.
