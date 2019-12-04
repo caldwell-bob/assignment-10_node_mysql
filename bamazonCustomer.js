@@ -60,7 +60,7 @@ function updateProductSales(order, product) {
     ],
     function(err, res) {
       if (err) throw err;
-      console.log(query);
+      // console.log(query);
       readProducts();
     }
   );

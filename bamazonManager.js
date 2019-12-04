@@ -54,13 +54,13 @@ function addNewProduct() {
     var newProductPrice = answers.newProductPrice;
     var newProductInv = answers.newProductInv;
 
-    console.log("You are adding " + newProduct);
-    console.log("You are adding " + newProductDept);
-    console.log("You are adding " + newProductPrice + " type: " + typeof newProductPrice);
-    console.log("You are adding " + newProductInv);
+    console.log("\nYou are adding the following new product: " + newProduct);
+    console.log(newProduct + " belongs to the  " + newProductDept + " department");
+    console.log("A " + newProduct + " retails for " + newProductPrice);
+    console.log("You know have " + newProductInv + " in stock");
 
     let sql = "INSERT INTO products (product_name, department_name, price, stock_quantity) values ('" + newProduct + "', '" + newProductDept + "', '" + newProductPrice + "', '" + newProductInv + "');";
-    console.log(sql);
+    // console.log(sql);
 
     connection.query(sql, function(err, res) {
       if (err) throw err;
